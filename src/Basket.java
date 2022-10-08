@@ -3,9 +3,7 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-//import static java.lang.System.out;
-
-public class Basket {
+public class Basket implements Serializable { //(2я задача) показываем, что можно сериловать через implements Serializable
     private final String[] name;  //название
     private final int[] price;  //цена
     long[] longArrInField;  // количество в лонге условие
@@ -95,6 +93,30 @@ public class Basket {
         } catch (FileNotFoundException | NoSuchElementException | NumberFormatException e) {  //ловим ошибки
             return null;
         }
+    }
 
+    //Добавьте метод для сохранения в файл в бинарном формате (2я задача)
+    public void saveBin(File file) {
+        try (
+                //открываем бинарный поток на запись, обернули в ObjectOutputStream чтобы было можно записывать объекты
+                ObjectOutputStream outTwo = new ObjectOutputStream(new FileOutputStream(file))
+        ) {
+            outTwo.writeObject(name); //записать объект и джава сама заглянет в каждую строку
+            outTwo.writeObject(price);
+            outTwo.writeObject(longArrInField);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    //Добавьте метод для загрузки корзины из бинарного файла (2я задача)
+    static void loadFromBinFile(File file) {
+        //открываем поток для чтения бинарных данных и оборачиваем в ObjectInputStream, чтобы разрешить джаве считывать там объекты
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

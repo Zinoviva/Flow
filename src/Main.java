@@ -1,9 +1,9 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.Scanner;
 
 class Main {
     static File file = new File("basket.txt"); //создание файла
+    // исправлено txt на bin (2я задача)
 
     public static void main(String[] args) throws FileNotFoundException {
         Basket basket;  //корзинка
