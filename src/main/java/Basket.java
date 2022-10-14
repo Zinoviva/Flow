@@ -1,17 +1,24 @@
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.*;
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 
 //import static java.lang.System.out;
 
 public class Basket {
     private final String[] name;  //название
     private final int[] price;  //цена
-    long[] longArrInField;  // количество в лонге условие
+    private long[] longArrInField;  // количество в лонг условие
 
     public void setLongArrInField(long[] longArrInField) {
         this.longArrInField = longArrInField;
+    }
+
+    public long[] getLongArrInField() {
+        return longArrInField;
     }
 
     public Basket(String[] name, int[] price) {
@@ -44,6 +51,69 @@ public class Basket {
             sumProducts += priceOfProduct;
         }
         System.out.println("Итого " + sumProducts + " рублей");
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < name.length; i++) {
+            sb.append(name[i]).append(" ").append(longArrInField[i]).append(" ").append(price[i] * longArrInField[i]).append("\n");
+        }
+        return sb.toString();
+    }
+
+    public JSONObject getJson(){
+        JSONObject result = new JSONObject();//создаем три массива для цена,наименование и штуки
+        JSONArray names = new JSONArray();
+        JSONArray prices = new JSONArray();
+        JSONArray amounts = new JSONArray();
+
+        //наименование
+        names.addAll(Arrays.asList(name));
+        for(int p : price){
+           prices.add(p);
+        }
+        for(long a : longArrInField){
+            amounts.add(a);
+        }
+        result.put("name", "Basket");  //добавляем в объект
+        result.put("names", names);
+        result.put("prices", prices);
+        result.put("amounts", amounts);
+
+        return result; //возвращаем объект
+    }
+
+    public static Basket getFromJson(){
+        JSONParser parser = new JSONParser();
+        try {
+            JSONObject object = (JSONObject) parser.parse(new FileReader("json_dir\\basket.json"));
+
+            JSONArray prices = (JSONArray) object.get("prices");  //берем массив по цене
+            int[] pricesArray = new int[prices.size()];
+            for (int i = 0; i < prices.size(); i++) {
+                pricesArray[i] = Integer.parseInt(prices.get(i).toString());
+            }
+            JSONArray names = (JSONArray) object.get("names");
+            String[] namesArray = new String[prices.size()];
+            for (int i = 0; i < names.size(); i++) {
+                namesArray[i] = names.get(i).toString();
+            }
+            JSONArray amounts = (JSONArray) object.get("amounts");
+            long[] amountsArray = new long[amounts.size()];
+            for (int i = 0; i < amounts.size(); i++) {
+                amountsArray[i] = Long.parseLong(amounts.get(i).toString());
+            }
+
+            Basket basket = new Basket(namesArray,pricesArray);
+            basket.setLongArrInField(amountsArray); //устанавливаем количество
+            return basket;
+        } catch (IOException | ParseException e) {
+            System.out.println("Не найден файл.");
+            int[] prices = {100, 200, 300};  //если файл не найден создаем файл с пустыми данными
+            String[] products = {"Хлеб", "Яблоки", "Молоко"};
+            return new Basket(products, prices);
+        }
     }
 
     public void saveTxt(File textFile) throws FileNotFoundException { //метод сохранения корзины в текстовый файл
@@ -97,4 +167,5 @@ public class Basket {
         }
 
     }
+
 }
