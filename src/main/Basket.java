@@ -1,21 +1,17 @@
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
+//import static java.lang.System.out;
 
 public class Basket {
     private final String[] name;  //название
     private final int[] price;  //цена
-    private long[] longArrInField;  // количество в лонг условие
+    long[] longArrInField;  // количество в лонге условие
 
     public void setLongArrInField(long[] longArrInField) {
         this.longArrInField = longArrInField;
-    }
-
-    public long[] getLongArrInField() {
-        return longArrInField;
     }
 
     public Basket(String[] name, int[] price) {
@@ -48,70 +44,6 @@ public class Basket {
             sumProducts += priceOfProduct;
         }
         System.out.println("Итого " + sumProducts + " рублей");
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < name.length; i++) {
-            sb.append(name[i]).append(" ").append(longArrInField[i]).append(" ").append(price[i] * longArrInField[i]).append("\n");
-        }
-        return sb.toString();
-    }
-
-    public JSONObject getJson(){
-        JSONObject result = new JSONObject();  //создаем объект итога
-        JSONArray names = new JSONArray();  //создаем три массива для цены,наименования и штук
-        JSONArray prices = new JSONArray();
-        JSONArray amounts = new JSONArray();
-
-        //наименование
-        names.addAll(Arrays.asList(name));  //пробегаемся по массиву имени с добавлением
-        for(int p : price){
-           prices.add(p);
-        }
-        for(long a : longArrInField){
-            amounts.add(a);
-        }
-        result.put("name", "Basket");  //добавляем в объект
-        result.put("names", names);
-        result.put("prices", prices);
-        result.put("amounts", amounts);
-
-        return result; //возвращаем объект
-    }
-
-
-    public static Basket getFromJson(){
-        JSONParser parser = new JSONParser();  //создаем объект для парсинга
-        try {
-            JSONObject object = (JSONObject) parser.parse(new FileReader("json_dir\\basket.json"));  //парсим файл
-
-            JSONArray prices = (JSONArray) object.get("prices");  //берем массив по цене пробегаемся по нему и преобразуем в инты
-            int[] pricesArray = new int[prices.size()];
-            for (int i = 0; i < prices.size(); i++) {
-                pricesArray[i] = Integer.parseInt(prices.get(i).toString());
-            }
-            JSONArray names = (JSONArray) object.get("names"); //берем массив по имени пробегаемся по нему и преобразуем в стринги
-            String[] namesArray = new String[prices.size()];
-            for (int i = 0; i < names.size(); i++) {
-                namesArray[i] = names.get(i).toString();
-            }
-            JSONArray amounts = (JSONArray) object.get("amounts"); //берем массив по количеству пробегаемся по нему и преобразуем в лонги
-            long[] amountsArray = new long[amounts.size()];
-            for (int i = 0; i < amounts.size(); i++) {
-                amountsArray[i] = Long.parseLong(amounts.get(i).toString());
-            }
-
-            Basket basket = new Basket(namesArray,pricesArray); //реализуем корзину
-            basket.setLongArrInField(amountsArray); //устанавливаем количество
-            return basket;  //вернем корзину
-        } catch (IOException | ParseException e) {
-            System.out.println("Не найден файл.");
-            int[] prices = {100, 200, 300};  //если файл не найден создаем файл с пустыми данными с данным содержанием
-            String[] products = {"Хлеб", "Яблоки", "Молоко"};
-            return new Basket(products, prices);  //вернем корзину
-        }
     }
 
     public void saveTxt(File textFile) throws FileNotFoundException { //метод сохранения корзины в текстовый файл
@@ -165,5 +97,4 @@ public class Basket {
         }
 
     }
-
 }

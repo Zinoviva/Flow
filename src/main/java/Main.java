@@ -1,21 +1,19 @@
-
-
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
-        ClientLog cl = new ClientLog();
-        Basket basket = Basket.getFromJson();  //баскет получаем из джейсона
+        ClientLog cl = new ClientLog();  //создаем клиентлог
+        Basket basket = Basket.getFromJson();  //баскет получаем из джсон
 
-        //при старте программы загружайте корзину десериализацией из json-а из файла basket.json
-        Scanner scanner = new Scanner(System.in);
+        //задача-при старте программы загружайте корзину десериализацией из json-а из файла basket.json
+        Scanner scanner = new Scanner(System.in);  //заводим сканер
         basket.startWindow(); //вызываем стартовое окно Список возможных товаров для покупки
 
         while (true) {
@@ -33,11 +31,12 @@ class Main {
             basket.addToCart(productNumber, productCount);
             cl.log(++productNumber, productCount);
         }
-        //вместо вызова метода saveTxt сериализуйте корзину в json-формате в файл basket.json
-        JSONObject obj = basket.getJson();
+
+        //задача-вместо вызова метода saveTxt сериализуйте корзину в json-формате в файл basket.json
+        JSONObject obj = basket.getJson();  //получаем объект джсон
 
         try (FileWriter file = new FileWriter("json_dir\\basket.json")) {
-            file.write(obj.toJSONString());
+            file.write(obj.toJSONString());  //в стринги
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
